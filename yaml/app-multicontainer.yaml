@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-debian-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-debian
+  template:
+    metadata:
+      labels:
+        app: nginx-debian
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      - name: debian
+        image: debian
+        command: ["/bin/sh", "-c", "while true; do date > /usr/share/nginx/html/index.html; sleep 60; done"]
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html
+        emptyDir: {}

@@ -1,0 +1,23 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gsutil-sync-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: gsutil-sync
+        image: gcr.io/cloud-builders/gsutil
+        command: ["gsutil", "-m", "rsync", "-r", "gs://<bucket-name>/<source-dir>", "/mnt/<destination-dir>"]
+        volumeMounts:
+        - name: disk-volume
+          mountPath: /mnt
+      restartPolicy: Never
+      volumes:
+      - name: disk-volume
+        gcePersistentDisk:
+          pdName: <disk-name>
+          fsType: ext4
+  backoffLimit: 4
+  activeDeadlineSeconds: 3600
